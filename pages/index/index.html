@@ -1,0 +1,250 @@
+<!DOCTYPE html><html class="i-ua_js_no i-ua_css_standard"><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7, IE=edge"/><title>Ответы на технические вопросы</title><script>;(function(d,e,c,r){e=d.documentElement;c="className";r="replace";e[c]=e[c][r]("i-ua_js_no","i-ua_js_yes");if(d.compatMode!="CSS1Compat")e[c]=e[c][r]("i-ua_css_standart","i-ua_css_quirks")})(document);</script><meta http-equiv="content-type" content="text/html; charset=utf-8"/><link rel="stylesheet" href="css/bootstrap.css"/><link rel="stylesheet" href="css/bootstrap-responsive.css"/><link rel="stylesheet" href="css/docs.css"/><link rel="stylesheet" href="css/prettify.css"/><link rel="stylesheet" href="css/print.css" media="print"/><!--[if lt IE 9]><script src="js/html5.js"></script><![endif]--><script src="js/FloatingMenu.js"></script><script src="js/jquery.js"></script><script src="js/prettify.js"></script><script>$(document).ready(function(){ prettyPrint(); initFloatingMenu('#left-nav-bar');})</script></head><body class="b-page__body b-page i-bem" onclick="return {&quot;b-page&quot;:{}}"><header class="jumbotron subhead"><div class="container"><h1>Ответы на технические вопросы</h1><p class="lead">Матвеева Владимира</p></div></header><div class="container"><div class="row"><div class="span3"><ul class="nav nav-list bs-docs-sidenav" id="left-nav-bar"><li><a class="b-link" href="#debug-ways">Способы отладки js-кода</a></li><li><a class="b-link" href="#browser-events">Что происходит в браузере после клика по ссылке?</a></li><li><a class="b-link" href="#auto-trader">Автосалон</a></li><li><a class="b-link" href="#file-search">Поиск файлов</a></li><li><a class="b-link" href="#print-args">Программа, реализованная на Bash, Python и Perl</a></li><li><a class="b-link" href="#experience">Мой опыт</a></li></ul></div><div class="span9"><section class="b-answer" id="debug-ways"><div class="page-header"><h1>1. Способы отладки js-кода</h1></div><p class="lead">Перечислите известные вам инструменты и приёмы для отладки кода в разных браузерах.</p><h2>alert()</h2><p>Останавливает поток, малоинформативен. Советуют <strong>не пользоваться</strong> им.</p><h2>Встроенные в браузер средства отладки</h2><p>Использование консоли (<strong>Console.log()</strong>) в средствах разработчиков в браузерах:</p><ul><li>Firefox:  <strong>Firebug</strong>;</li><li>Safari,  Chrome:  <strong>WebKit Web Inspector</strong>;</li><li>Opera:  <strong>Dragonfly</strong>;</li></ul><h2>Blackbird</h2><p>Консоль для отладки и журналирования скриптов.</p></section><section class="b-answer" id="browser-events"><div class="page-header"><h1>2. Что происходит в браузере при клике по ссылке?</h1></div><p class="lead">Опишите своими словами, что происходит в браузерах при клике на ссылку <a href="http://www.yandex.ru/">yandex.ru</a> (полнота ответа — на ваше усмотрение).</p><p>JavaScript события в браузерах выполняются в две фазы. В первой фазе осуществляется последовательный проход по обработчикам событий от основного DOM элемента (<strong>document</strong>) до целевого элемента, в котором произошло событие, в нашем случае до элемента <strong>&lt;a&gt;</strong>. Это называется фазой захвата (<strong>capturing</strong>). После начинается фаза всплытия (<strong>bubbling</strong>). В ней процесс срабатывания обработчиков события идет по дереву элементов в обратную сторону (от целевого элемента к главному).</p><p>Далее будет выполнено действие по перенаправлению нас на целевой URL, представленный в атрибуте href, www.yandex.ru. Это действие произойдет <strong>вне зависимости</strong> от того, было ли остановлено всплытие события или нет.</p></section><section class="b-answer" id="auto-trader"><div class="page-header"><h1>3. Автосалон</h1></div><p class="lead">Предположим, что мы представляем автосалон по продаже японских и немецких автомобилей. У нас есть базовые классы и примеры их использования. Допишите недостающий код.</p><pre class="prettyprint linenums">/**
+ * Создает экземпляр Машины
+ * @this {Car}
+ * @param {string} manufacturer Производитель
+ * @param {string} model Модель
+ * @param {number} year Год производство
+ */
+function Car(manufacturer, model, year) {
+    this.manufacturer = manufacturer;
+    this.model = model;
+    this.year = year || new Date().getFullYear();
+    this.getInfo = function(){
+        return this.manufacturer + " " + this.model + " " + this.year
+    };
+    this.getDetailedInfo = function(){
+        return "Производитель: " + this.manufacturer + ". Модель: " + this.model + ". Год: " + this.year
+    };
+    this.toString = function(){
+        return this.getInfo();
+    };
+    this.getCountry = function() {
+        switch (this.manufacturer.toLowerCase()) {
+            case 'bmw':
+            case 'audi':
+                return 'Germany';
+            case 'toyota':
+                return 'Japan';
+        }
+    };
+    var rusCurrencyRatio ={
+        '€': 40,
+        '?': 0.4,
+        '$': 32,
+        '?': 50
+    };
+    this.getRusCurrencyPrice = function() {
+        if(rusCurrencyRatio[this.currencyType])
+            return this.price * rusCurrencyRatio[this.currencyType] + ' RUR';
+        else
+            if(this.price)
+                return this.price + ' RUR';
+            else
+                return 'price have not been declared';
+    };
+}
+// @TODO: если конструктор вызывается без указания текущего года, то подставлять текущий
+// @TODO: реализовать методы вывода информации о машине:
+// console.log('Car: ' + bmw); // Car: BMW X5 2010
+// console.log(bmw.getInfo()); // BMW X5 2010
+// console.log(bmw.getDetailedInfo()); // Производитель: BMW. Модель: X5. Год: 2010
+
+var bmw = new Car("BMW", "X5", 2010),
+    audi = new Car("Audi", "Q5", 2012),
+    toyota = new Car("Toyota", "Camry");
+
+
+/**
+ * Создает экземпляр Автосалона
+ * @this {CarDealer}
+ * @param {string} name Название автосалона
+ */
+function CarDealer(name) {
+    this.name = name;
+    this.cars = [];
+    this.add = function(){
+        for( var i = 0; i < arguments.length; i++ )
+            if(arguments[i] instanceof Car)
+                this.cars.push(arguments[i]);
+        return this;
+    };
+    this.setPrice = function(carInfo, price){
+        for( var i = 0; i < this.cars.length; i++ )
+            if(this.cars[i] == carInfo)
+                if(isNaN(price.charAt(0)))
+                {
+                    this.cars[i].currencyType = price.charAt(0);
+                    this.cars[i].price = price.substring(1, price.length);
+                }
+                else
+                    this.cars[i].price = price;
+        return this;
+    };
+    this.list = function(){
+        var chosenCars = [];
+        for( var i = 0; i < this.cars.length; i++ )
+            chosenCars.push(this.cars[i] + ': ' + this.cars[i].getRusCurrencyPrice());
+        return chosenCars.join(", ");
+    };
+    this.listByCountry = function(country){
+        var chosenCars = [];
+        for( var i = 0; i < this.cars.length; i++ )
+            if(this.cars[i].getCountry() == country)
+                chosenCars.push(this.cars[i] + ': ' + this.cars[i].getRusCurrencyPrice());
+        return chosenCars.join(", ");
+    };
+}
+
+var yandex = new CarDealer('Яндекс.Авто');
+
+// @TODO: реализовать метод добавления машин в автосалон. Предусмотреть возможность добавления одной машины, нескольких машин.
+yandex
+    .add(toyota)
+    .add(bmw, audi);
+
+// @TODO: реализовать метод установки цены на машину
+/**
+ * Установить цену на машину
+ * @param {string} car идентификатор машины
+ * @param {string} price стоимость
+ */
+// идентификатор машины составляется следующим образом "производитель модель год"
+// стоимость машины может быть задана в двух валютах: йена и евро.
+yandex
+    .setPrice('BMW X5 2010', '€2000')
+    .setPrice('Audi Q5 2012', '€3000')
+    .setPrice('Toyota Camry 2012', '?3000');
+
+yandex.list(); //BMW X5 2010, Audi Q5 2012, Toyota Camry 2012
+yandex.listByCountry('Germany'); //BMW X5 2010, Audi Q5 2012
+
+// @TODO: бонус! выводить список машин с ценой в рублях.
+</pre></section><section class="b-answer" id="file-search"><div class="page-header"><h1>4. Поиск файлов</h1></div><p class="lead">Найдите все текстовые файлы (*.txt), в имени которых содержится «yandex», а в содержимом — «школа разработки интерфейсов».</p><code class="prettyprint">find . -name "*yandex*.txt" -type f -exec grep -Hn "школа разработки интерфейсов" {} \;</code></section><section class="b-answer" id="print-args"><div class="page-header"><h1>5. Программа, реализованная на Bash, Python и Perl</h1></div><p class="lead">Дана программа, реализованная одновременно на Bash, Python и Perl. Программа принимает произвольное количество аргументов и печатает их количество. Нужно добавить опцию -v для verbose-режима, в котором дополнительно выводится значение каждого из аргументов.</p><h2>Bash</h2><pre class="prettyprint linenums">#!/usr/bin/env bash
+
+usage() {
+cat << EOF
+Usage: printargs.sh [OPTIONS] [ARGUMENTS]
+  Print the number of arguments.
+
+OPTIONS:
+  -h      print help message
+  -m MSG  custom message
+  -v      print arguments
+
+Examples:
+  printargs.sh a b c
+  printargs.sh -m 'Arguments count: ' a b c
+  printargs.sh -h
+  printargs.sh -v a b c
+
+EOF
+}
+
+while getopts "hvm:" OPTION
+do
+    case $OPTION in
+        h)
+            usage
+            exit 1
+            shift;;
+        m)
+            MESSAGE=$OPTARG
+            shift;shift;;
+        v)
+            VERBOSE=1
+            shift;;
+    esac
+done
+if [[ "$#" != "0" ]]; then
+    if [[ "$MESSAGE" != "" ]]; then
+        echo $MESSAGE
+    fi
+
+    echo $#
+
+    if [[ "$VERBOSE" != "" ]]; then
+        echo $@;
+    fi
+else
+    usage
+fi
+</pre><h2>Python</h2><pre class="prettyprint linenums">#!/usr/bin/env python
+
+import argparse
+
+parser = argparse.ArgumentParser(description='Print the number of arguments.')
+parser.add_argument('arguments', metavar='ARG', type=str, nargs='*', help='some arguments')
+parser.add_argument('-m', dest='message', default='', help='custom message')
+parser.add_argument('-v', dest='verbose', action='store_true', help='print arguments')
+
+args = parser.parse_args()
+
+count = len(args.arguments)
+
+if(count > 0):
+    if args.message != '':
+        print(args.message)
+
+    print(count)
+    if args.verbose:
+        print (' '.join(args.arguments));
+else:
+    parser.print_usage();
+</pre><h2>Perl</h2><pre class="prettyprint linenums">#!/usr/bin/env perl
+
+use strict;
+use Getopt::Long;
+use Pod::Usage;
+
+my $help;
+my $message = '';
+my $verbose;
+
+@ARGV and GetOptions(
+    "h" => \$help,
+    "m:s" => \$message,
+    "v" => \$verbose,
+) or pod2usage(1);
+pod2usage(-verbose => 2, -exitval => 2) if $help;
+
+my $count = $#ARGV + 1;
+
+if($message ne "") {
+    print($message . "\n");
+}
+
+print($count . "\n");
+
+if ($verbose) {
+    print((join ' ', @ARGV) . "\n");
+}
+
+__END__
+
+=head1 NAME
+
+    printargs.pl - Print the number of arguments.
+
+=head1 SYNOPSIS
+
+    printargs.pl [options] [arguments]
+
+=head1 OPTIONS
+
+    -h      Show help message.
+
+    -m MSG  Specify a custom message.
+
+    -v      Print arguments.
+
+
+=head1 EXAMPLE
+
+    printargs.sh a b c
+
+    printargs.sh -m 'Arguments count: ' a b c
+
+    printargs.sh -h
+
+    printargs.sh -v a b c
+</pre></section><section class="b-answer" id="experience"><div class="page-header"><h1>6. Мой опыт</h1></div><p class="lead">Расскажите, в каком объёме и при каких обстоятельствах вы изучали следующие темы: языки программирования (императивные/декларативные, разные системы типов), структуры (классы, структуры данных, примитивные типы), парадигмы (события, ООП, параллельность/асинхронность, кеширование), алгоритмы (парсинг, сортировка, поиск), паттерны.</p><p>В детстве у меня был компьютер «байт». На нем я впервые познакомился с языком программирования Basic. В школе с класса 8-го мы изучали опять же Basic. В университете сначала был Pascal и C++. Далее Delphi и С#, а так же Prolog и Lisp. После устроился работать программистом PHP в интернет-магазин. Тогда же более подробно узнал язык JavaScript. Сейчас работаю разработчиком на .NET. Впервые я стал использовать ООП на более-менее внятном уровне, при работе с OpenGL на Delphi. Более глубоко стал применять только недавно. Параллельность и асинхронность так же открыл для себя относительно недавно, около года назад. События – пока это для меня новая тема, и я нахожусь в процессе ее изучения. С парсингом дел никогда не имел. Сортировка – одна из лучших – слиянием. Поиск – были лекции о двоичных деревьях поиска, но так уже не особо помню. Паттерны – узнал об их существовании тоже год назад. Пока их не изучал, использовать не приходилось.</p></section></div></div></div><footer class="footer"><div class="container"><p class="pull-right"><a class="b-link" href="#">Наверх</a></p></div></footer></body></html>

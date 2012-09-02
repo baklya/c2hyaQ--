@@ -1,0 +1,41 @@
+block b-answer {
+
+    tag: 'section'
+    attrs: {
+        var ctx = this.ctx;
+        sec = {};
+        ctx.sid && (sec.id = ctx.sid);
+        return sec;
+    }
+    content: {
+
+        
+        var c = [];
+
+        c.push({
+            tag: 'div',
+            cls: 'page-header',
+            content: {
+                tag: 'h1',
+                content: []
+            }
+        });
+        if(this.ctx.h1){c[0].content.content.push(this.ctx.h1);}
+
+        if(this.ctx.lead){
+            c.push({
+                tag: 'p',
+                cls: 'lead',
+                content: this.ctx.lead
+            })   
+        }
+
+        if(this.ctx.content)
+        {
+                c.push(this.ctx.content)
+        }
+
+        return c;
+    }
+
+}
